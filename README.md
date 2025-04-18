@@ -9,7 +9,7 @@
 
 - 🎨 **Clean & Modern UI** — Responsive and animated design built using **React + TailwindCSS**
 - 📤 **Drag & Drop / Upload** — User-friendly image input options
-- 🤖 **AI-Powered Background Removal** — Connects to a free third-party background remover API
+- 🤖 **AI-Powered Background Removal** — Connects to a free third-party background remover API but only **50** credits
 - 🎬 **Smooth Transitions** — Animated entry and exit using **Framer Motion**
 
 ---
@@ -51,7 +51,7 @@ cd server && npm i
 #### In another terminal
 ```bash
 - cd server
-- 
+- npx nodemon
 ```
 
 ---
