@@ -4,3 +4,14 @@ body{
     background-image: linear-gradient(to left, #000000, #434343);
     height: 100vh;
 }
+@keyframes scroll-horizontal{
+    0%{
+        transform: translate(100%);
+    }
+    100%{
+        transform: translate(-100%);
+    }
+}
+.marque{
+    animation: scroll-horizontal 15s linear infinite;
+}

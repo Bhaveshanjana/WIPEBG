@@ -3,11 +3,14 @@ import { GoArrowRight } from "react-icons/go";
 import { motion, AnimatePresence } from "framer-motion";
 import { RxUpload } from "react-icons/rx";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const App = () => {
   const [isclick, setIsClick] = useState(true);
   const [image, setImage] = useState(null);
   const [processedImage, setProcessedImage] = useState("");
+  const navigate = useNavigate();
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -16,19 +19,23 @@ const App = () => {
     const formData = new FormData();
     formData.append("image", file);
 
-    const res = await axios.post(
-      "http://localhost:3000/api/remove-bg",
-      formData,
-      {
-        responseType: "blob",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/remove-bg`,
+        formData,
+        {
+          responseType: "blob",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-    const imageUrl = URL.createObjectURL(res.data);
-    setProcessedImage(imageUrl); // display this in an <img>
+      const imageUrl = URL.createObjectURL(res.data);
+      setProcessedImage(imageUrl); // display this in an <img>
+    } catch (error) {
+      toast.error("Error while removing background", error);
+    }
   };
 
   return (
@@ -36,7 +43,15 @@ const App = () => {
       <h1 className=" p-2 text-lg md:text-2xl text-yellow-300/70 font-semibold">
         WIPEBG
       </h1>
-
+      {!isclick && (
+        <div className=" overflow-hidden whitespace-nowrap">
+          <p className="inline-block marque text-center text-gray-300 text-sm md:text-lg">
+            <span className="text-yellow-300/70">WIPEBG</span> Clean only 40
+            image after that free limit is exceeds so if you get any trouble
+            during removing background that's the reason
+          </p>
+        </div>
+      )}
       <AnimatePresence>
         {isclick && (
           <motion.div
@@ -108,7 +123,13 @@ const App = () => {
             {image && (
               <div className="text-center mt-4">
                 <a href={processedImage} download="no-bg.png">
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-all cursor-pointer">
+                  <button
+                    onClick={() => {
+                      setImage("");
+                      setProcessedImage("");
+                    }}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-all cursor-pointer"
+                  >
                     Download
                   </button>
                 </a>
