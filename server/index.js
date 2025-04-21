@@ -3,23 +3,24 @@ require("dotenv").config();
 const cors = require("cors");
 const app = express();
 const FormData = require("form-data");
-const fs = require("fs");
-const path = require("path");
-const axios = require("axios");
 const fileUpload = require("express-fileupload");
+const axios = require("axios");
 
-app.use(cors());
 app.use(fileUpload());
+app.use(cors());
 
 app.post("/api/remove-bg", async (req, res) => {
   try {
     const file = req.files.image;
-
-    const tempPath = path.join(__dirname, "temp", file.name);
-    await file.mv(tempPath); // Save file temporarily
+    if (!req.files || !req.files.image) {
+      return res.status(400).json({ error: "No image file uploaded." });
+    }
 
     const formData = new FormData();
-    formData.append("image_file", fs.createReadStream(tempPath));
+    formData.append("image_file", file.data, {
+      filename: file.name,
+      contentType: file.mimetype,
+    });
 
     const response = await axios.post(
       "https://api.remove.bg/v1.0/removebg",
@@ -32,8 +33,6 @@ app.post("/api/remove-bg", async (req, res) => {
         responseType: "arraybuffer", // Get raw image data as binary
       }
     );
-
-    fs.unlinkSync(tempPath); // delete img from temp
 
     res.set("Content-Type", "image/png");
     res.send(response.data);
